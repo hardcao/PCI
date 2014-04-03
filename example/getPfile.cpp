@@ -81,14 +81,14 @@ int main()
 		double ratio = getSim(pnt[t],pnt[i]);
 		for(int j=0;j<pnt[j].ln;j++){
 			int idx = pnt[i].cd[j].cmd;
-			if(i==t&&pnt[i].cd[j].sc>3) {num[idx]+=pnt[i].cd[j].sc;continue;}
+			if(i==t&&pnt[i].cd[j].sc>=3) {num[idx]+=pnt[i].cd[j].sc;continue;}
 			num[idx] += ratio*pnt[i].cd[j].sc;
 		}
 	}
 	int cnt =0;
 	for(int i=0;i<pnt[t].ln;i++){
 		int idx = pnt[t].cd[i].cmd;
-		if((int(num[idx]))> 3){
+		if((int(num[idx]))>=3){
 			cnt++;
 		}
 	}
@@ -97,7 +97,7 @@ int main()
 	int flg =0;
 	for(int i=0;i<pnt[t].ln;i++){
 		int idx = pnt[t].cd[i].cmd;
-		if((int(num[idx]))> 3){
+		if((int(num[idx]))>=3){
 			if(flg == 0){
 				flg ++;
 			} else {

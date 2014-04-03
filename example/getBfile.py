@@ -3,7 +3,7 @@ import os
 import re
 
 inFile = open('txt1.out').read()
-testData = open('testData.txt','w');
+testData = open('bfile.txt','w');
 ln = 0;
 for row in inFile.split('\n'):
     if ln == 0:
