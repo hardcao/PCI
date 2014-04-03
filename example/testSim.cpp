@@ -53,7 +53,7 @@ int main()
 	int lt =0;
 	int pn,dt,cmd;
 	float sc;
-	for(int i=0;i<60816;i++){
+	for(int i=0;i<5537;i++){
 		scanf("%d%d%f%d",&pn,&cmd,&sc,&dt);
 		int flg = 0;
 		for(int j=0;j<lt;j++){
@@ -81,7 +81,7 @@ int main()
 		double ratio = getSim(pnt[t],pnt[i]);
 		for(int j=0;j<pnt[j].ln;j++){
 			int idx = pnt[i].cd[j].cmd;
-			if(i==t&&pnt[i].cd[j].sc>3&&pnt[i].cd[j].dt<196) {num[idx]+=pnt[i].cd[j].sc;continue;}
+			if(i==t&&pnt[i].cd[j].sc>3) {num[idx]+=pnt[i].cd[j].sc;continue;}
 			num[idx] += ratio*pnt[i].cd[j].sc;
 		}
 	}
@@ -104,6 +104,7 @@ int main()
 				printf(",");
 			}
 			printf("%d",pnt[t].cd[i].cmd);
+			// printf("%d %d\n",pnt[t].pn,pnt[t].cd[i].cmd);
 		}
 	}
 	printf("\n");
