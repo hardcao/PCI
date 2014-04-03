@@ -4,6 +4,7 @@
 #define PN  900
 #define N 600
 #define CN 30000
+#define itN 2000
 using namespace std;
 struct Commodity{
 	float sc;
@@ -16,6 +17,10 @@ struct Person
 	int ln;
 	Commodity cd[N];
 }pnt[PN];
+struct item{
+	int pn;
+	int cmd;
+}itmN[itN];
 double num[CN];
 double getSim(Person p1,Person p2){
 	Commodity cd[N];
@@ -55,6 +60,7 @@ int main()
 	float sc;
 	for(int i=0;i<5537;i++){
 		scanf("%d%d%f%d",&pn,&cmd,&sc,&dt);
+		// if(dt>195) continue;
 		int flg = 0;
 		for(int j=0;j<lt;j++){
 			if(pnt[j].pn == pn){
@@ -75,14 +81,36 @@ int main()
 			lt++;
 		}
 	}
+	int cntItm =0;
+	for(int i=0;i<1074;i++){
+		scanf("%d%d%f%d",&pn,&cmd,&sc,&dt);
+		// if(dt > 195)continue;
+		itmN[cntItm].pn = pn;
+		itmN[cntItm++].cmd = cmd;
+	}
+	// for(int i=0;i<cntItm;i++){
+// 		for(int j=0;j<cntItm;j++){
+// 			if(i==j)continue;
+// 			if(itmN[i].pn==itmN[j].pn&&itmN[i].cmd==itmN[j].cmd){
+// 				printf("wrong ans\n");
+// 			}
+// 		}
+// 	}
+	int flgg =0;
     for(int t=0;t<lt;t++){
 	for(int i=0;i<CN;i++) num[i]=0;
 	for(int i=1;i<lt;i++){
+		if(i == t) continue;
 		double ratio = getSim(pnt[t],pnt[i]);
-		for(int j=0;j<pnt[j].ln;j++){
+		for(int j=0;j<pnt[i].ln;j++){
 			int idx = pnt[i].cd[j].cmd;
-			if(i==t&&pnt[i].cd[j].sc>=3) {num[idx]+=pnt[i].cd[j].sc;continue;}
 			num[idx] += ratio*pnt[i].cd[j].sc;
+		}
+	}
+	for(int i=0;i<pnt[t].ln;i++){
+		int idx = pnt[t].cd[i].cmd;
+		for(int j=0;j<cntItm;j++){
+			if(itmN[j].pn==pnt[t].pn) {num[idx]+=3;flgg++;}
 		}
 	}
 	int cnt =0;
@@ -93,21 +121,22 @@ int main()
 		}
 	}
 	if(cnt==0) continue;
-	printf("%d  ",pnt[t].pn);
+	// printf("%d  ",pnt[t].pn);
 	int flg =0;
 	for(int i=0;i<pnt[t].ln;i++){
 		int idx = pnt[t].cd[i].cmd;
 		if((int(num[idx]))>=3){
-			if(flg == 0){
-				flg ++;
-			} else {
-				printf(",");
-			}
-			printf("%d",pnt[t].cd[i].cmd);
-			// printf("%d %d\n",pnt[t].pn,pnt[t].cd[i].cmd);
+			// if(flg == 0){
+// 				flg ++;
+// 			} else {
+// 				printf(",");
+// 			}
+// 			printf("%d",pnt[t].cd[i].cmd);
+			printf("%d %d\n",pnt[t].pn,pnt[t].cd[i].cmd);
 		}
 	}
-	printf("\n");
+	 // printf("\n");
 	}
+	// printf("%d\n",flgg);
 	return 0;
 }
