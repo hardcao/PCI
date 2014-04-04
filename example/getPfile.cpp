@@ -28,8 +28,15 @@ struct logBuy{
 	float sc;
 	int dt;
 }lg[lgN];
+struct B2B{
+	int ln;
+	int cmd[20];
+	int cmdn[20];
+	int rcm;
+	int cnt;
+}Buy[CN];
 double num[CN];
-int vist[CN],print[CN];
+int vist[CN],print[CN],vist1[CN];
 double getSim(Person p1,Person p2){
 	Commodity cd[N];
 	int n =0;
@@ -60,6 +67,56 @@ double getSim(Person p1,Person p2){
 		return -num/den;
 	}
 	return num/den;
+}
+void setMutlBuy(int lgn){
+	for(int i=0;i<lgn;i++){
+		int cnt =0;
+		for(int j=i+1;j<lgn;j++){
+			if(lg[i].pn==lg[j].pn&&lg[i].cmd==lg[j].cmd){
+				cnt++;
+			}
+		}
+		if(cnt) vist[lg[i].cmd]=1;
+	}
+}
+void setB2B(int lgn){
+	for(int i=0;i<CN;i++){Buy[i].ln =0,Buy[i].rcm=-1;}
+	for(int i=0;i<lgn;i++){
+		if(lg[i].sc != 1) continue;
+		int idx = lg[i].cmd;
+		for(int j = i+1;j<lgn;j++){
+			if(lg[j].sc != 1) continue;
+			if(lg[i].cmd == lg[j].cmd) continue;
+			if(lg[i].pn==lg[j].pn&&lg[i].dt == lg[j].dt){
+				int flg =1;
+				Buy[idx].cnt++;
+				for(int t = 0;t<Buy[idx].ln;t++){
+					if(Buy[idx].cmd[t]==lg[j].cmd){
+						Buy[idx].cmdn[t]++;
+						flg =0;
+					}
+				}
+				if(Buy[idx].ln>=20) continue;
+				if(flg){
+					int lt = Buy[idx].ln;
+					Buy[idx].cmd[lt]=lg[j].cmd;
+					Buy[idx].cmdn[lt]=1;
+				    Buy[idx].ln++;
+				}
+			}
+		}
+	}
+	for(int i=0;i<CN;i++){
+		int maxN =-1;
+		int bestCmd = -1;
+		for(int j=0;j<Buy[i].ln;j++){
+			if(maxN<Buy[i].cmdn[j]){
+				bestCmd = Buy[i].cmd[j];
+				maxN = Buy[i].cmdn[j];
+			}
+		}
+		Buy[i].rcm = bestCmd;
+	}
 }
 int main()
 {
@@ -114,19 +171,12 @@ int main()
 			lt++;
 		}
 	}
-	int cntItm =0;
 	int flgg =0;
+	for(int i=0;i<CN;i++) vist[i]=0;
+	setMutlBuy(lgn);
+	setB2B(lgn);
     for(int t=0;t<lt;t++){
-	for(int i=0;i<CN;i++) {num[i]=0;vist[i]=0;}
-	for(int i=0;i<lgn;i++){
-		int cnt =0;
-		for(int j=i+1;j<lgn;j++){
-			if(lg[i].pn==lg[j].pn&&lg[i].cmd==lg[j].cmd){
-				cnt++;
-			}
-		}
-		if(cnt) vist[lg[i].cmd]=1;
-	}
+	for(int i=0;i<CN;i++) {num[i]=0;vist1[i]=0;}
 	for(int i=1;i<lt;i++){
 		if(i == t) continue;
 		double ratio = getSim(pnt[t],pnt[i]);
@@ -135,38 +185,39 @@ int main()
 			num[idx] += ratio*pnt[i].cd[j].sc;
 		}
 	}
-	for(int i=0;i<pnt[t].ln;i++){
-		int idx = pnt[t].cd[i].cmd;
-		for(int j=0;j<cntItm;j++){
-			if(itmN[j].pn==pnt[t].pn) {vist[idx]=1;}
-		}
-	}
 	int cnt =0;
 	for(int i=0;i<pnt[t].ln;i++){
 		int idx = pnt[t].cd[i].cmd;
-		if((int(num[idx]))>3||vist[idx]){
-			cnt++;
+		if((int(num[idx]))>3){
+			vist1[idx]=1;
 		}
 	}
-	if(cnt==0) continue;
-	// printf("%d  ",pnt[t].pn);
-	int flg =0;
-	for (int i=0;i<CN;i++) print[i]=0;
-	for(int i=0;i<pnt[t].ln;i++){
-		int idx = pnt[t].cd[i].cmd;
-		if(print[idx]) continue;
-		if(vist[idx]||int(num[idx])>3){
-			// if(flg == 0){
-// 				flg ++;
-// 			} else {
-// 				printf(",");
-// 			}
-// 			printf("%d",pnt[t].cd[i].cmd);
-			print[idx]=1;
-			printf("%d %d\n",pnt[t].pn,pnt[t].cd[i].cmd);
+	for(int i=0;i<lgn;i++){
+		if(pnt[t].pn==lg[i].pn&&lg[i].sc == 1){
+			int idx = lg[i].cmd;
+			vist1[Buy[idx].rcm]=1;
+			if(vist[idx]){
+				vist1[idx]=1;
+			}
 		}
 	}
-	 // printf("\n");
+	int cn =0;
+	for(int i=0;i<CN;i++){if(vist1[i]) cn++;}
+	if(cn ==0) continue;
+	int flg = 0;
+	printf("%d  ",pnt[t].pn);
+	for(int i=0;i<CN;i++){
+		if(vist1[i]){
+			if(flg == 0){
+				flg ++;
+			} else {
+				printf(",");
+			}
+			printf("%d",i);
+			// printf("%d %d\n",pnt[t].pn,i);
+		}
+	}
+	 printf("\n");
 	}
 	// printf("%d\n",flgg);
 	return 0;
