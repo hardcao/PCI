@@ -34,7 +34,7 @@ struct B2B{
 	int cmdn[20];
 	int rcm;
 	int cnt;
-}Buy[CN];
+}Buy[CN],coll[CN];
 double num[CN];
 int vist[CN],print[CN],vist1[CN];
 double getSim(Person p1,Person p2){
@@ -43,7 +43,7 @@ double getSim(Person p1,Person p2){
 	double sum1=0,sum2=0,sum1Sq =0,sum2Sq =0,pSum =0;
 	for(int i=0;i<p1.ln;i++){
 		for (int j=0;j<p2.ln;j++){
-			if(p1.cd[i].cmd == p2.cd[j].cmd&&p1.cd[i].dt == p2.cd[j].dt){
+			if(p1.cd[i].cmd == p2.cd[j].cmd){
 				int sc1 = p1.cd[i].sc;
 				int sc2 = p2.cd[j].sc;
 				if(p1.cd[i].dt == p2.cd[j].dt){
@@ -71,7 +71,9 @@ double getSim(Person p1,Person p2){
 void setMutlBuy(int lgn){
 	for(int i=0;i<lgn;i++){
 		int cnt =0;
+		if(lg[i].sc != 1) continue;
 		for(int j=i+1;j<lgn;j++){
+			if(lg[j].sc != 1) continue;
 			if(lg[i].pn==lg[j].pn&&lg[i].cmd==lg[j].cmd){
 				cnt++;
 			}
@@ -110,12 +112,55 @@ void setB2B(int lgn){
 		int maxN =-1;
 		int bestCmd = -1;
 		for(int j=0;j<Buy[i].ln;j++){
-			if(maxN<Buy[i].cmdn[j]){
+			if(maxN<Buy[i].cmdn[j]&&Buy[i].cmdn[j]>2){
 				bestCmd = Buy[i].cmd[j];
 				maxN = Buy[i].cmdn[j];
 			}
 		}
 		Buy[i].rcm = bestCmd;
+	}
+}
+void setC2B(int lgn){
+	for(int i=0;i<CN;i++){coll[i].ln =0,coll[i].rcm=-1;}
+	for(int i=0;i<lgn;i++){
+		if(lg[i].sc != 2) continue;
+		int idx = lg[i].cmd;
+		for(int j = 0;j<lgn;j++){
+			if(lg[j].dt<lg[i].dt)continue;
+			if(lg[j].sc != 1) continue;
+			if(lg[i].cmd != lg[j].cmd) continue;
+			if(lg[i].pn==lg[j].pn){
+				int flg =1;
+				coll[idx].cnt++;
+				for(int t = 0;t<coll[idx].ln;t++){
+					if(coll[idx].cmd[t]==lg[j].cmd){
+						coll[idx].cmdn[t]++;
+						flg =0;
+					}
+				}
+				// if(coll[idx].ln>2) printf("YES\n");
+				if(coll[idx].ln>=20) continue;
+				if(flg){
+					int lt = coll[idx].ln;
+					coll[idx].cmd[lt]=lg[j].cmd;
+					coll[idx].cmdn[lt]=1;
+				    coll[idx].ln++;
+				}
+			}
+		}
+	}
+	for(int i=0;i<CN;i++){
+		int maxN =-1;
+		int bestCmd = -1;
+		for(int j=0;j<coll[i].ln;j++){
+			// printf("cmd== %d\n",coll[i].cmd[j]);
+			if(coll[i].cmd[j]==i){
+				// printf("cmd ==%d\n",i);
+				bestCmd = coll[i].cmd[j];
+				maxN = coll[i].cmdn[j];
+			}
+		}
+		coll[i].rcm = bestCmd;
 	}
 }
 int main()
@@ -149,7 +194,7 @@ int main()
 				int idx = pnt[j].ln;
 				int vt =1;
 				for (int t = 0;t<pnt[j].ln;t++){
-					if(pnt[j].cd[t].cmd == cmd&&pnt[j].cd[t].dt==dt&&vt){
+					if(pnt[j].cd[t].cmd == cmd&&vt){
 						vt = 0;
 						pnt[j].cd[t].sc+=sc;
 					}
@@ -175,11 +220,13 @@ int main()
 	for(int i=0;i<CN;i++) vist[i]=0;
 	setMutlBuy(lgn);
 	setB2B(lgn);
+	setC2B(lgn);
     for(int t=0;t<lt;t++){
 	for(int i=0;i<CN;i++) {num[i]=0;vist1[i]=0;}
 	for(int i=1;i<lt;i++){
 		if(i == t) continue;
 		double ratio = getSim(pnt[t],pnt[i]);
+		// if(ratio>0.5)	printf("ratio==%f\n",ratio);
 		for(int j=0;j<pnt[i].ln;j++){
 			int idx = pnt[i].cd[j].cmd;
 			num[idx] += ratio*pnt[i].cd[j].sc;
@@ -188,14 +235,15 @@ int main()
 	int cnt =0;
 	for(int i=0;i<pnt[t].ln;i++){
 		int idx = pnt[t].cd[i].cmd;
-		if((int(num[idx]))>3){
+		if(num[idx]>4){
 			vist1[idx]=1;
 		}
 	}
 	for(int i=0;i<lgn;i++){
 		if(pnt[t].pn==lg[i].pn&&lg[i].sc == 1){
 			int idx = lg[i].cmd;
-			vist1[Buy[idx].rcm]=1;
+			if(Buy[idx].rcm !=-1) vist1[Buy[idx].rcm]=1;
+			if(coll[idx].rcm != -1) {vist1[coll[idx].rcm]=1;}
 			if(vist[idx]){
 				vist1[idx]=1;
 			}
