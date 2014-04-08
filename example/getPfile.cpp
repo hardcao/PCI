@@ -36,7 +36,7 @@ struct B2B{
 	int cnt;
 }Buy[CN],coll[CN];
 double num[CN];
-int vist[CN],print[CN],vist1[CN];
+int vist[CN],print[CN],vist1[CN],mutl[CN];
 double getSim(Person p1,Person p2){
 	Commodity cd[N];
 	int n =0;
@@ -217,12 +217,12 @@ int main()
 		}
 	}
 	int flgg =0;
-	for(int i=0;i<CN;i++) vist[i]=0;
+	for(int i=0;i<CN;i++) {vist[i]=0;}
 	setMutlBuy(lgn);
 	setB2B(lgn);
 	setC2B(lgn);
     for(int t=0;t<lt;t++){
-	for(int i=0;i<CN;i++) {num[i]=0;vist1[i]=0;}
+	for(int i=0;i<CN;i++) {num[i]=0;vist1[i]=0;mutl[i]= 0;}
 	for(int i=1;i<lt;i++){
 		if(i == t) continue;
 		double ratio = getSim(pnt[t],pnt[i]);
@@ -233,8 +233,12 @@ int main()
 		}
 	}
 	int cnt =0;
+	int bmax = -1,bestb = -1;
 	for(int i=0;i<pnt[t].ln;i++){
 		int idx = pnt[t].cd[i].cmd;
+		if(pnt[t].cd[i].sc>=9){
+			mutl[idx] =1;
+		}
 		if(num[idx]>3){
 			vist1[idx]=1;
 		}
@@ -243,7 +247,7 @@ int main()
 		if(pnt[t].pn==lg[i].pn){
 			int idx = lg[i].cmd;
 			if(lg[i].sc == 1){
-				if(Buy[idx].rcm !=-1) vist1[Buy[idx].rcm]=1;
+				if(Buy[idx].rcm !=-1&&mutl[idx]) vist1[Buy[idx].rcm]=1;
 				if(vist[idx]){
 					vist1[idx]=1;
 				}
