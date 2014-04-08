@@ -154,7 +154,7 @@ void setC2B(int lgn){
 		int bestCmd = -1;
 		for(int j=0;j<coll[i].ln;j++){
 			// printf("cmd== %d\n",coll[i].cmd[j]);
-			if(coll[i].cmd[j]==i){
+			if(coll[i].cmd[j]==i&&coll[i].cmdn[j]>=2){
 				// printf("cmd ==%d\n",i);
 				bestCmd = coll[i].cmd[j];
 				maxN = coll[i].cmdn[j];
@@ -185,8 +185,8 @@ int main()
 		dt = lg[i].dt;
 		// if(dt>195) continue;
 		if(sc == 1) sc = 4;
-		if(sc == 2) sc = 2;
-		if(sc == 3) sc = 1;
+		if(sc == 2) sc = 3;
+		if(sc == 3) sc = 2;
 		int flg = 0;
 		for(int j=0;j<lt;j++){
 			if(pnt[j].pn == pn){
@@ -235,17 +235,21 @@ int main()
 	int cnt =0;
 	for(int i=0;i<pnt[t].ln;i++){
 		int idx = pnt[t].cd[i].cmd;
-		if(num[idx]>4){
+		if(num[idx]>3){
 			vist1[idx]=1;
 		}
 	}
 	for(int i=0;i<lgn;i++){
-		if(pnt[t].pn==lg[i].pn&&lg[i].sc == 1){
+		if(pnt[t].pn==lg[i].pn){
 			int idx = lg[i].cmd;
-			if(Buy[idx].rcm !=-1) vist1[Buy[idx].rcm]=1;
-			if(coll[idx].rcm != -1) {vist1[coll[idx].rcm]=1;}
-			if(vist[idx]){
-				vist1[idx]=1;
+			if(lg[i].sc == 1){
+				if(Buy[idx].rcm !=-1) vist1[Buy[idx].rcm]=1;
+				if(vist[idx]){
+					vist1[idx]=1;
+				}
+			}
+			if(lg[i].sc == 2){
+				if(coll[idx].rcm != -1) {vist1[coll[idx].rcm]=1;}
 			}
 		}
 	}
