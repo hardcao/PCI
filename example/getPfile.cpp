@@ -241,7 +241,7 @@ int main()
 	}
 	for(int i=0;i<pnt[t].ln;i++){
 		int idx = pnt[t].cd[i].cmd;
-		if(pnt[t].cd[i].sc > 9){
+		if(pnt[t].cd[i].sc > 6){
 			if(Buy[idx].rcm !=-1){
 				print[Buy[idx].rcm]=1;
 			}
@@ -262,21 +262,21 @@ int main()
 		cnt+=print[i];
 	}
 	if(cnt==0) continue;
-	// printf("%d  ",pnt[t].pn);
+	printf("%d  ",pnt[t].pn);
 	int flg =0;
 	for(int i=0;i<CN;i++){
 		if(!print[i]) continue;
 		if(print[i]){
-			// if(flg == 0){
-// 				flg ++;
-// 			} else {
-// 				printf(",");
-// 			}
-// 			printf("%d",i);
-			printf("%d %d\n",pnt[t].pn,i);
+			if(flg == 0){
+				flg ++;
+			} else {
+				printf(",");
+			}
+			printf("%d",i);
+			// printf("%d %d\n",pnt[t].pn,i);
 		}
 	}
-	 // printf("\n");
+	 printf("\n");
 	}
 	// printf("%d\n",flgg);
 	return 0;
